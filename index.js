@@ -24,4 +24,4 @@ yargs.command({
   },
 });
 
-console.log(yargs.argv);
+yargs.argv;
