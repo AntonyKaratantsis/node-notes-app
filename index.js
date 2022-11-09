@@ -1,8 +1,14 @@
-const chalk = require("chalk");
+const fs = require("fs");
 const yargs = require("yargs");
 
-// Process args the right way
+const notesPath = "./notes.json";
 
+let notes = [];
+if (fs.existsSync(notesPath)) {
+  notes = JSON.parse(fs.readFileSync(notesPath));
+}
+
+// Process args the right way
 //******************************************************
 // Create add command
 yargs.command({
@@ -21,8 +27,22 @@ yargs.command({
     },
   },
   handler: ({ title, body }) => {
-    console.log(`Title: ${title}`);
-    console.log(`Body: ${body}`);
+    //if note with the same title exists,
+    //overwrite the body of that note. Otherwise
+    //append new note to the list
+    const noteIdx = notes.findIndex((el) => el.title === title);
+    if (noteIdx !== -1) {
+      notes[noteIdx].body = body;
+      console.log(`Update note "${title} with body "${body}"`);
+      fs.writeFileSync(notesPath, JSON.stringify(notes));
+      return;
+    }
+
+    notes.push({ title, body });
+    fs.writeFileSync(notesPath, JSON.stringify(notes));
+    console.log(
+      `Note with title "${title}" and body "${body}" saved to notes db successfully.`
+    );
   },
 });
 
@@ -39,7 +59,15 @@ yargs.command({
     },
   },
   handler: ({ title }) => {
-    console.log(`Removing note titled "${title}"`);
+    const noteIdx = notes.findIndex((el) => el.title === title);
+    if (noteIdx === -1) {
+      console.log(`Note with title "${title}" not found in database.`);
+      return;
+    }
+
+    notes = notes.filter((note) => note.title !== title);
+    fs.writeFileSync(notesPath, JSON.stringify(notes));
+    console.log(`Removed note titled "${title}"`);
   },
 });
 
@@ -49,7 +77,14 @@ yargs.command({
   command: "list",
   describe: "List all notes",
   handler: () => {
-    console.log(`Listing out all notes`);
+    if (notes.length === 0) {
+      console.log("Notes list is empty.");
+      return;
+    }
+    console.log("Listing notes:");
+    notes.forEach(({ title, body }) =>
+      console.log(`Title: "${title}", body: "${body}"`)
+    );
   },
 });
 
@@ -66,7 +101,14 @@ yargs.command({
     },
   },
   handler: ({ title }) => {
-    console.log(`Reading note titled "${title}"`);
+    const noteIdx = notes.findIndex((el) => el.title === title);
+    if (noteIdx === -1) {
+      console.log(`Note with title "${title}" not found in database.`);
+      return;
+    }
+
+    const [note] = notes.filter((note) => note.title === title);
+    console.log(note.body);
   },
 });
 
