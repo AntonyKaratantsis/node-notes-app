@@ -2,13 +2,20 @@ const fs = require("fs");
 const NOTES_PATH = "./notes.json";
 
 const loadNotes = () => {
-  let notes;
-  try {
-    notes = require(NOTES_PATH);
-  } catch (e) {
-    notes = [];
+  // try {
+  //   const notes = require(NOTES_PATH);
+  //   return notes;
+  // } catch (e) {
+  //   return [];
+  // }
+  try{
+    const dataBuffer = fs.readFileSync(NOTES_PATH);
+    const dataJsonStr = dataBuffer.toString();
+    return JSON.parse(dataJsonStr);
   }
-  return notes;
+  catch(e){
+    return [];
+  }
 };
 
 const writeNotes = (notes) =>
