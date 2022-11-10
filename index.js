@@ -1,12 +1,14 @@
 const fs = require("fs");
 const yargs = require("yargs");
+const { loadNotes } = require("./notes");
 
 const notesPath = "./notes.json";
 
-let notes = [];
-if (fs.existsSync(notesPath)) {
-  notes = JSON.parse(fs.readFileSync(notesPath));
-}
+// let notes = [];
+// if (fs.existsSync(notesPath)) {
+//   notes = JSON.parse(fs.readFileSync(notesPath));
+// }
+let notes = loadNotes();
 
 // Process args the right way
 //******************************************************
@@ -82,6 +84,7 @@ yargs.command({
       return;
     }
     console.log("Listing notes:");
+    debugger
     notes.forEach(({ title, body }) =>
       console.log(`Title: "${title}", body: "${body}"`)
     );
