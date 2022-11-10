@@ -70,8 +70,8 @@ const readNote = ({ title }) => {
 };
 
 module.exports = {
-  addNote,
-  listNotes,
   removeNote,
+  listNotes,
   readNote,
+  addNote,
 };
